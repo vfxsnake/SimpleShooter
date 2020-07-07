@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		"D:/Projects/CPPDev/SimpleShooter/.vscode": true,
+		"D:/Projects/CPPDev/SimpleShooter/Content": true,
+		"D:/Projects/CPPDev/SimpleShooter/Intermediate": true
+	}
+}
