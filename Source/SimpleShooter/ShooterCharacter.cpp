@@ -43,10 +43,15 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	//bind look Right
 	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APawn::AddControllerYawInput);
 
+	// bind LookUpRate amd lookupRight for the game path
+	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &AShooterCharacter::LookUpRate);
+	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &AShooterCharacter::LookRightRate);
 	// Binding Action
 	// Binding Jump Action: Actions needs an enum to specify on which event will be triggerend:
 	// jump is implemented in the character class so we call it form there.
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+
+	
 	
 }
 
@@ -62,6 +67,16 @@ void AShooterCharacter::MoveForward(float AxisValue)
 void AShooterCharacter::MoveRight(float AxisValue) 
 {
 	AddMovementInput(GetActorRightVector() * AxisValue);
+}
+
+void AShooterCharacter::LookUpRate(float AxisValue) 
+{
+	AddControllerPitchInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::LookRightRate(float AxisValue) 
+{
+	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
 }
 
 

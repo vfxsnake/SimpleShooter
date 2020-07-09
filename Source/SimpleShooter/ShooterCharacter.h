@@ -26,8 +26,15 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	// variables
+	UPROPERTY(EditAnywhere)
+	float RotationRate = 10;
+
+	// functions
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 
+	void LookUpRate(float AxisValue);
+	void LookRightRate(float AxisValue);
 
 };
