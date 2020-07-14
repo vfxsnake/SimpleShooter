@@ -2,6 +2,7 @@
 
 
 #include "ShooterCharacter.h"
+#include "Gun.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -15,7 +16,15 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// sending the Gun class through the world and returning bac to gun as a pointer.
+	// this is call by any character in the scene
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
 	
+	// hiding the current gun in the skeleton:
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
 }
 
 // Called every frame
@@ -46,11 +55,14 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	// bind LookUpRate amd lookupRight for the game path
 	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &AShooterCharacter::LookUpRate);
 	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &AShooterCharacter::LookRightRate);
+
 	// Binding Action
 	// Binding Jump Action: Actions needs an enum to specify on which event will be triggerend:
 	// jump is implemented in the character class so we call it form there.
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 
+	// bind PullTrigger
+	PlayerInputComponent->BindAction(TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
 	
 	
 }
@@ -77,6 +89,11 @@ void AShooterCharacter::LookUpRate(float AxisValue)
 void AShooterCharacter::LookRightRate(float AxisValue) 
 {
 	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::Shoot() 
+{
+	Gun->PullTrigger();
 }
 
 
