@@ -3,6 +3,8 @@
 
 #include "Gun.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AGun::AGun()
@@ -37,6 +39,50 @@ void AGun::Tick(float DeltaTime)
 
 void AGun::PullTrigger() 
 {
-	UE_LOG(LogTemp, Warning,TEXT("Pulling trigger forme %s"), *GetName());
+	// UE_LOG(LogTemp, Warning,TEXT("Pulling trigger from %s"), *GetName());
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
+	
+	// get view position fron character controller:
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (!OwnerPawn)
+	{
+		return ;
+	}
+
+	AController* OwnerController = OwnerPawn->GetController();
+
+	if (! OwnerController)
+	{
+		return ;
+	}
+	
+	FVector Location;
+	FRotator Rotation;
+	OwnerController->GetPlayerViewPoint(Location, Rotation);
+
+	// draw a camera for debugin ray cast position:
+	// DrawDebugCamera(GetWorld(), Location, Rotation, 90, 2, FColor::Red, true);
+
+	// calculatin the end poitn of the trace:
+	// create a vector from location pointing to Rotation direction scaled by max range scalar
+	FVector End = Location + Rotation.Vector() * MaxRange;
+
+	// tracing channel alog vector
+	FHitResult Hit;
+	bool bSuccess = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel1);
+
+	if (bSuccess)
+	{
+		// drawin debug hit location
+		// DrawDebugPoint(GetWorld(), Hit.Location, 20, FColor::Red, true);
+		
+		// set direction to inverse of hit direction to point to us.
+		
+		if (ImpacktEffect)
+		{
+			FVector ShotDirection = -Rotation.Vector();
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpacktEffect, Hit.Location, ShotDirection.Rotation());
+		}
+	}
 }
 
