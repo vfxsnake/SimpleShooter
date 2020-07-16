@@ -17,6 +17,9 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// set Health to MaxHealth:
+	Health = MaxHealth;
+
 	// sending the Gun class through the world and returning bac to gun as a pointer.
 	// this is call by any character in the scene
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
@@ -25,6 +28,20 @@ void AShooterCharacter::BeginPlay()
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
 	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
 	Gun->SetOwner(this);
+}
+
+bool AShooterCharacter::IsDeath()const
+{
+	if(Health == 0.0f)
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+	
 }
 
 // Called every frame
@@ -65,6 +82,19 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
 	
 	
+}
+
+float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+								 class AController* EventInstigator, AActor* DamageCauser) 
+{
+	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent,EventInstigator, DamageCauser);
+	
+	DamageToApply = FMath::Min(Health, DamageToApply);
+	Health  -= DamageToApply;
+
+	UE_LOG(LogTemp, Warning, TEXT("%s Health: %f"), *GetName(), Health);
+
+	return DamageToApply;
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)

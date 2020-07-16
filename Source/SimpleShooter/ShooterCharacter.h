@@ -24,14 +24,32 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// overriding TakeDamage:
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+								 class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	// funciton callable by blueprint as a native node that doesn't have an execution pin 
+	// is callble inside blueprint natively.
+	UFUNCTION(BlueprintPure)
+	bool IsDeath() const;
+	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 
 private:
 	// variables
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10;
+	
+	// health variables:
+	UPROPERTY(EditDefaultsOnly)
+	float MaxHealth = 100;
+
+	UPROPERTY(VisibleAnywhere)
+	float Health;
 
 	// using the template class of Agun to store the object inside blue print,
 	// this prevents to only store the specify class after that the gun pointer is stored
