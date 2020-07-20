@@ -14,7 +14,24 @@ class SIMPLESHOOTER_API AShooterAIController : public AAIController
 {
 	GENERATED_BODY()
 
+public:
+	// Public Functions
+	virtual void Tick(float DeltaSeconds)override;
+
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	//private varialbes
+
+	// temporal playerPawn*
+	APawn* PlayerPawn = nullptr;
+
+	// acceptance radius
+	UPROPERTY(EditAnywhere)
+	class UBehaviorTree* AIBehavior;
 	
+	//private Fucntions
+
+
 };

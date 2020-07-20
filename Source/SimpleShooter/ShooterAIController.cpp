@@ -3,16 +3,29 @@
 
 #include "ShooterAIController.h"
 #include "Kismet/GameplayStatics.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 
 void AShooterAIController::BeginPlay() 
 {
     Super::BeginPlay();
     // ask for player pawn and stores in a pointer.
-    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    if (AIBehavior)
+    {
+        // runs the behavior tree specified on Aicontroller blueprint
+        RunBehaviorTree(AIBehavior);
+        
+        // create a verctor key for blackboard
+        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+        GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
+    }
 
-    SetFocus(PlayerPawn, EAIFocusPriority::Gameplay);
-    //using the path findig geo move to the actor 
-    MoveToActor(PlayerPawn); 
 
+}
+
+void AShooterAIController::Tick(float DeltaSeconds) 
+{
+    Super::Tick(DeltaSeconds);
+    // the implementation is going to ocure in the behaviorTree
 }
