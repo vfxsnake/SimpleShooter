@@ -17,7 +17,6 @@ void AShooterAIController::BeginPlay()
         RunBehaviorTree(AIBehavior);
         
         // create a verctor key for blackboard
-        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
         GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
     }
 
@@ -27,5 +26,24 @@ void AShooterAIController::BeginPlay()
 void AShooterAIController::Tick(float DeltaSeconds) 
 {
     Super::Tick(DeltaSeconds);
-    // the implementation is going to ocure in the behaviorTree
+    // seting and de setting player location, setting last Known location
+    if(LineOfSightTo(PlayerPawn))
+    {
+        // Sett Player Location :
+        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+        
+        // Set LastKnownLocation:
+        GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
+    }
+
+    else
+    {
+       
+        
+        // GetBlackboardComponent()->ClearValue(TEXT("LastKnownPlayerLocation"));
+        
+        GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+    }
+    
+    
 }

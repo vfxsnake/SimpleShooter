@@ -32,6 +32,9 @@ public:
 	// is callble inside blueprint natively.
 	UFUNCTION(BlueprintPure)
 	bool IsDeath() const;
+
+	// this function become public to have the ability to shit fron the behavior tree from the ai controller.
+	void Shoot();
 	
 
 protected:
@@ -68,6 +71,6 @@ private:
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
 
-	void Shoot();
+	
 
 };
