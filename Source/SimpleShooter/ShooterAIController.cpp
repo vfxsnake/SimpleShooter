@@ -25,25 +25,5 @@ void AShooterAIController::BeginPlay()
 
 void AShooterAIController::Tick(float DeltaSeconds) 
 {
-    Super::Tick(DeltaSeconds);
-    // seting and de setting player location, setting last Known location
-    if(LineOfSightTo(PlayerPawn))
-    {
-        // Sett Player Location :
-        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
-        
-        // Set LastKnownLocation:
-        GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
-    }
-
-    else
-    {
-       
-        
-        // GetBlackboardComponent()->ClearValue(TEXT("LastKnownPlayerLocation"));
-        
-        GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
-    }
-    
-    
+    Super::Tick(DeltaSeconds);    
 }
