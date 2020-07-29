@@ -31,7 +31,10 @@ public:
 	// funciton callable by blueprint as a native node that doesn't have an execution pin 
 	// is callble inside blueprint natively.
 	UFUNCTION(BlueprintPure)
-	bool IsDeath() const;
+	bool IsDead() const;
+
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const;
 
 	// this function become public to have the ability to shit fron the behavior tree from the ai controller.
 	void Shoot();

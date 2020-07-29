@@ -26,6 +26,26 @@
 		{
 			"Name": "HoudiniNiagara",
 			"Enabled": true
+		},
+		{
+			"Name": "AudioModulation",
+			"Enabled": true
+		},
+		{
+			"Name": "SoundCueTemplates",
+			"Enabled": true
+		},
+		{
+			"Name": "SoundMod",
+			"Enabled": true
+		},
+		{
+			"Name": "SoundUtilities",
+			"Enabled": true
+		},
+		{
+			"Name": "Spatialization",
+			"Enabled": true
 		}
 	]
 }

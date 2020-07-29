@@ -30,6 +30,7 @@ void AGun::BeginPlay()
 	
 }
 
+
 // Called every frame
 void AGun::Tick(float DeltaTime)
 {
@@ -37,28 +38,18 @@ void AGun::Tick(float DeltaTime)
 
 }
 
-void AGun::PullTrigger() 
-{
-	// UE_LOG(LogTemp, Warning,TEXT("Pulling trigger from %s"), *GetName());
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
-	
-	// get view position fron character controller:
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!OwnerPawn)
-	{
-		return ;
-	}
-
-	AController* OwnerController = OwnerPawn->GetController();
-
+bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection) 
+{	
+	AController* OwnerController = GetOwnerController();
 	if (! OwnerController)
 	{
-		return ;
+		return false;
 	}
-	
+
 	FVector Location;
 	FRotator Rotation;
 	OwnerController->GetPlayerViewPoint(Location, Rotation);
+	ShotDirection = -Rotation.Vector();
 
 	// draw a camera for debugin ray cast position:
 	// DrawDebugCamera(GetWorld(), Location, Rotation, 90, 2, FColor::Red, true);
@@ -68,24 +59,54 @@ void AGun::PullTrigger()
 	FVector End = Location + Rotation.Vector() * MaxRange;
 
 	// tracing channel alog vector
-	FHitResult Hit;
+	Hit;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
-	bool bSuccess = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel1, Params);
+	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel1, Params);
+	
+}
+
+AController* AGun::GetOwnerController() const
+{
+	// get view position fron character controller:
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (!OwnerPawn)
+	{
+		return nullptr;
+	}
+
+	return OwnerPawn->GetController();
+
+}
+
+void AGun::PullTrigger() 
+{
+	// spawning emmiter
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
+	
+	//spawning sound:
+	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
+	
+
+	FHitResult Hit;
+	FVector ShotDirection;
+	bool bSuccess  = GunTrace(Hit, ShotDirection);
 
 	if (bSuccess)
 	{
 		// drawin debug hit location
 		// DrawDebugPoint(GetWorld(), Hit.Location, 20, FColor::Red, true);
-		
 		// set direction to inverse of hit direction to point to us.
 		
 		if (ImpacktEffect)
 		{
-			FVector ShotDirection = -Rotation.Vector();
+			// impact fx
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpacktEffect, Hit.Location, ShotDirection.Rotation());
+			// iimpactSound
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
+			
 			//  applying damage:
 			
 			AActor* HitActor =  Hit.GetActor();
@@ -93,6 +114,7 @@ void AGun::PullTrigger()
 			{
 				// first create a FPointDamageEvent: takes Damage value, Hit result, Direction and a subclass in this case none
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr); 
+				AController* OwnerController = GetOwnerController();
 			
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 			}

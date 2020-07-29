@@ -18,6 +18,9 @@ public:
 	// Public Functions
 	virtual void Tick(float DeltaSeconds)override;
 
+	// query if the ai character is dead
+	bool IsDead() const;
+	
 protected:
 	virtual void BeginPlay() override;
 

@@ -32,7 +32,7 @@ void AShooterCharacter::BeginPlay()
 	Gun->SetOwner(this);
 }
 
-bool AShooterCharacter::IsDeath()const
+bool AShooterCharacter::IsDead()const
 {
 	if(Health == 0.0f)
 	{
@@ -44,6 +44,11 @@ bool AShooterCharacter::IsDeath()const
 		return false;
 	}
 	
+}
+
+float AShooterCharacter::GetHealthPercent() const
+{
+	return Health / MaxHealth;
 }
 
 // Called every frame
@@ -97,7 +102,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	UE_LOG(LogTemp, Warning, TEXT("%s Health: %f"), *GetName(), Health);
 
 	// disable controller:
-	if(IsDeath())
+	if(IsDead())
 	{
 		// this stores the game mode in this varible.
 		ASimpleShooterGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameModeBase>();
